@@ -1,0 +1,55 @@
+@model UroMeter.Web.Models.Users.SearchUsersViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+
+}
+
+<div class="">
+    <p class="mb-3">
+        <a class="btn btn-primary" asp-action="Create">Create</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Birth Day
+                </th>
+                <th>
+                    Phone
+                </th>
+                <th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => user.Id)
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Index", "MedicalRecord", new {userId = user.Id})">@Html.DisplayFor(modelItem => user.Name)</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => user.BirthDay)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => user.Phone)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@user.Id">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

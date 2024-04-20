@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UroMeter.Web", "UroMeter.Web\UroMeter.Web.csproj", "{72B51EA9-B34F-4888-9D0E-836F84A379E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UroMeter.DataAccess", "UroMeter.DataAccess\UroMeter.DataAccess.csproj", "{D520006C-9C2D-4703-B95A-8F22A9F21259}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{72B51EA9-B34F-4888-9D0E-836F84A379E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72B51EA9-B34F-4888-9D0E-836F84A379E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72B51EA9-B34F-4888-9D0E-836F84A379E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72B51EA9-B34F-4888-9D0E-836F84A379E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D520006C-9C2D-4703-B95A-8F22A9F21259}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D520006C-9C2D-4703-B95A-8F22A9F21259}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D520006C-9C2D-4703-B95A-8F22A9F21259}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D520006C-9C2D-4703-B95A-8F22A9F21259}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8E3780F7-E5F9-4FCD-8E7F-6A9F2F8DF3D0}
+	EndGlobalSection
+EndGlobal
