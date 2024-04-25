@@ -1,12 +1,16 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model UroMeter.Web.Models.Users.CreateUserViewModel
+﻿@model UroMeter.Web.Models.Users.EditUserViewModel
+
+@{
+    Layout = "_Layout";
+}
 
 <div>
-    @using (Html.BeginForm("Create", "User", FormMethod.Post))
+    @using (Html.BeginForm("Edit", "User", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
 
         <div>
+            @Html.TextBoxFor(e => e.Id, "", new { @class = "d-none" })
             <div class="mb-3">
                 @Html.LabelFor(e => e.Name, new { @class = "form-label" })
                 @Html.TextBoxFor(e => e.Name, "", new { @class = "form-control", @placeholder = "Name" })
@@ -24,7 +28,7 @@
             </div>
         </div>
 
-        <button class="btn btn-secondary" asp-controller="User" asp-action="Index" type="submit">Back</button>
-        <button class="btn btn-primary" asp-controller="User" asp-action="Create" type="submit">Save</button>
+        <button class="btn btn-secondary mr-2" asp-controller="User" asp-action="Index" type="submit">Back</button>
+        <button class="btn btn-primary" asp-controller="User" asp-action="Edit" type="submit">Save</button>
     }
 </div>

@@ -20,4 +20,12 @@
     <ProjectReference Include="..\UroMeter.DataAccess\UroMeter.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\User\Edit.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\User\Edit.cshtml" />
+  </ItemGroup>
+
 </Project>
