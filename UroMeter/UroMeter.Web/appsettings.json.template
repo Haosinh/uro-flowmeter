@@ -1,0 +1,14 @@
+{
+  "Logging": {
+    "Console": {
+      "FormatterOptions": {
+        "JsonWriterOptions": {
+          "Indented": false
+        }
+      }
+    }
+  },
+  "ConnectionStrings": {
+    "AppDatabase": "Server={{$.rds_db_host}};Port={{$.rds_db_port}};Database={{$.rds_db_name}};Uid={{$.rds_db_user}};Pwd={{$.rds_db_password}};"
+  }
+}

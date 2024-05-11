@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UroMeter.DataAccess;
 using UroMeter.Web.Models.MedicalRecord;
@@ -27,12 +28,50 @@ public class MedicalRecordController : Controller
             .OrderBy(e => e.CheckUpAt)
             .ToListAsync(cancellationToken);
 
+        var dataPoints = new List<DataPoint>()
+        {
+            new()
+            {
+                Data = 1,
+                Time = DateTime.Now.AddHours(1)
+            },
+            new()
+            {
+                Data = 2,
+                Time = DateTime.Now.AddHours(2)
+            },
+            new()
+            {
+                Data = 3,
+                Time = DateTime.Now.AddHours(3)
+            },
+            new()
+            {
+                Data = 4,
+                Time = DateTime.Now.AddHours(4)
+            },
+        };
+
+
         var viewModel = new MedicalRecordUserId
         {
             Patient = patient,
-            MedicalRecords = medicalRecords
+            MedicalRecords = medicalRecords,
+            DataPoints = dataPoints
+
         };
 
         return View(viewModel);
     }
+}
+
+public class DataPoint
+{
+    [JsonPropertyName("y")]
+    public double Data { get; set; }
+
+    [JsonPropertyName("x")]
+    public DateTime Time { get; set; }
+
+    //public double Volume { get; set; }
 }

@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appsettings.json.template" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.AsyncInitialization" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
       <PrivateAssets>all</PrivateAssets>
@@ -27,5 +32,11 @@
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\User\Edit.cshtml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json.template" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1development_1json__JsonSchema="https://json.schemastore.org/ava.json" /></VisualStudio></ProjectExtensions>
 
 </Project>
