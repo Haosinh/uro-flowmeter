@@ -1,7 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model UroMeter.Web.Models.Users.CreateUserViewModel
 
-<div>
+@{
+    Layout = "_Layout";
+}
+
+<div class="container bg-white py-5 px-sm-3 px-md-5 mt-4 rounded">
     @using (Html.BeginForm("Create", "User", FormMethod.Post))
     {
         @Html.AntiForgeryToken()

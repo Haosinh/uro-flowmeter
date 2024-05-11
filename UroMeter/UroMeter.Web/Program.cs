@@ -17,6 +17,7 @@ services.AddAsyncInitializer<DatabaseInitializer>();
 
 // Add services to the container.
 services.AddControllersWithViews();
+services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -34,6 +35,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapControllerRoute(
     name: "default",

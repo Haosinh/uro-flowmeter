@@ -1,5 +1,4 @@
 ﻿using UroMeter.DataAccess.Models;
-using UroMeter.Web.Controllers;
 
 namespace UroMeter.Web.Models.MedicalRecord;
 
@@ -9,5 +8,5 @@ public class MedicalRecordUserId
 
     public List<DataAccess.Models.MedicalRecord> MedicalRecords { get; set; } = new();
 
-    public List<DataPoint> DataPoints { get; set; } = new();
+    public IEnumerable<MedicalRecordDataDto> DataPoints { get; set; } = new List<MedicalRecordDataDto>();
 }

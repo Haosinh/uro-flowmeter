@@ -4,15 +4,9 @@ public class MedicalRecordData
 {
     public int Id { get; set; }
 
-    /// <summary>
-    /// X axis.
-    /// </summary>
-    public DateTime Time { get; set; }
+    public int TimeInMilisecond { get; set; }
 
-    /// <summary>
-    /// Y axis.
-    /// </summary>
-    public double Height { get; set; }
+    public int VolumnInMililiter { get; set; }
 
     public int MedicalRecordId { get; set; }
 

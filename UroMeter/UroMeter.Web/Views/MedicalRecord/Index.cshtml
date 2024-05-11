@@ -1,37 +1,68 @@
 ﻿@using System.Text.Json
 @model UroMeter.Web.Models.MedicalRecord.MedicalRecordUserId
 
-<div>
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="container bg-white py-5 px-sm-3 px-md-5 mt-4 rounded">
+    <p class="mb-3">
+        @Html.ActionLink("Back", "Index", "User", null, new { @class = "btn btn-primary" })
+    </p>
     <h1>Medical Record of User @Model.Patient.Name</h1>
-    <div>
-        <canvas id="line-chart"></canvas>
+    <div class="container">
+        <div class="row" style="height: 500px">
+            <div class="col-3">
+                <label for="@Model.Patient.Id" class="form-label">Id: </label>
+                <p class="form-control">@Model.Patient.Id</p>
+                <label for="@Model.Patient.Name" class="form-label">Name: </label>
+                <p class="form-control">@Model.Patient.Name</p>
+                <label for="@Model.Patient.BirthDay" class="form-label">BirthDay: </label>
+                <p class="form-control">@Model.Patient.BirthDay</p>
+                <label for="@Model.Patient.Phone" class="form-label">Phone: </label>
+                <p class="form-control">@Model.Patient.Phone</p>
+            </div>
+            <div class="col-9"> <canvas id="line-chart"></canvas></div>
+        </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1"></script>
-
 <script>
     const dataPoints = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.DataPoints))');
+    // const dataPoints = [{ x: 1, y: 10 }, { x: 2, y: 20 }, { x: 4, y: 30 }, { x: 8, y: 40 }];
+
+    console.log(dataPoints);
 
     new Chart(document.getElementById("line-chart"), {
         type: 'line',
         data: {
-            datasets: [{
-                data: dataPoints
-            }],
+            datasets: [
+                {
+                    label: "Flow",
+                    data: dataPoints
+                }
+            ]
         },
         options: {
             title: {
                 display: true,
-                text: 'Chart JS Line Chart Example'
+                text: 'Flow Chart'
+            },
+            options: {
+                responsive: true
             },
             scales: {
                 x: {
-                    type: 'timeseries',
+                    type: 'time',
+                    time: {
+                        unit: 'millisecond'
+                    }
                 }
-            }
+            },
         }
     });
 </script>

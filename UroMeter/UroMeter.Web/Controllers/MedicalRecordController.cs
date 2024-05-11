@@ -1,11 +1,15 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Globalization;
+using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UroMeter.DataAccess;
+using UroMeter.DataAccess.Models;
 using UroMeter.Web.Models.MedicalRecord;
 
 namespace UroMeter.Web.Controllers;
 
+[Route("[controller]")]
 public class MedicalRecordController : Controller
 {
     private readonly AppDbContext appDbContext;
@@ -15,6 +19,7 @@ public class MedicalRecordController : Controller
         this.appDbContext = appDbContext;
     }
 
+    [HttpGet("")]
     public async Task<ActionResult<MedicalRecordUserId>> Index(int userId, CancellationToken cancellationToken)
     {
         var patient = await appDbContext.Users.FirstOrDefaultAsync(e => e.Id == userId, cancellationToken: cancellationToken);
@@ -28,50 +33,78 @@ public class MedicalRecordController : Controller
             .OrderBy(e => e.CheckUpAt)
             .ToListAsync(cancellationToken);
 
-        var dataPoints = new List<DataPoint>()
-        {
-            new()
+        var dataPoints = await appDbContext.MedicalRecordDatas
+            .Where(e => e.MedicalRecordId == 1)
+            .Select(e => new MedicalRecordDataDto
             {
-                Data = 1,
-                Time = DateTime.Now.AddHours(1)
-            },
-            new()
-            {
-                Data = 2,
-                Time = DateTime.Now.AddHours(2)
-            },
-            new()
-            {
-                Data = 3,
-                Time = DateTime.Now.AddHours(3)
-            },
-            new()
-            {
-                Data = 4,
-                Time = DateTime.Now.AddHours(4)
-            },
-        };
+                TimeInMilisecond = e.TimeInMilisecond,
+                VolumnInMililiter = e.VolumnInMililiter
+            })
+            .ToListAsync(cancellationToken);
 
+        var simplify = new List<MedicalRecordDataDto>();
+
+        var current = 0;
+        var step = 2000;
+
+        var time = dataPoints.First().TimeInMilisecond;
+        foreach (var point in dataPoints)
+        {
+            point.TimeInMilisecond -= time;
+        }
+
+        foreach (var point in dataPoints)
+        {
+            if (point.TimeInMilisecond >= current)
+            {
+                simplify.Add(point);
+                current += step;
+            }
+        }
 
         var viewModel = new MedicalRecordUserId
         {
             Patient = patient,
             MedicalRecords = medicalRecords,
-            DataPoints = dataPoints
+            DataPoints = simplify
 
         };
 
         return View(viewModel);
     }
+
+    [HttpPost("{id:int}")]
+    public async Task<IActionResult> ImportMedicalRecord([FromRoute] int id, [FromForm] ImportMedicalRecordCommand command, CancellationToken cancellationToken)
+    {
+        using (var reader = new StreamReader(command.File.OpenReadStream()))
+        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        {
+            csv.Context.RegisterClassMap<MedicalRecordMap>();
+            await csv.ReadAsync();
+            csv.ReadHeader();
+
+            var records = new List<MedicalRecordData>();
+            while (await csv.ReadAsync())
+            {
+                var record = csv.GetRecord<MedicalRecordData>();
+                record.MedicalRecordId = 1;
+
+                records.Add(record);
+            }
+
+            await appDbContext.AddRangeAsync(records, cancellationToken);
+            await appDbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        return Empty;
+    }
 }
 
-public class DataPoint
+public class MedicalRecordMap : ClassMap<MedicalRecordData>
 {
-    [JsonPropertyName("y")]
-    public double Data { get; set; }
-
-    [JsonPropertyName("x")]
-    public DateTime Time { get; set; }
-
-    //public double Volume { get; set; }
+    public MedicalRecordMap()
+    {
+        Map(e => e.TimeInMilisecond).Index(0);
+        Map(e => e.VolumnInMililiter).Index(1);
+    }
 }

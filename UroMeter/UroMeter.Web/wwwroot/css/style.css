@@ -1,0 +1,13 @@
+:root {
+    --gray: #F5F2F2;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    background-color: #F5F2F2;
+    min-height: 100%;
+    gap: 20px;
+}
