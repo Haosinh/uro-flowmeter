@@ -50,7 +50,9 @@ var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 dbContext.Database.Migrate();
 
 var mqttService = scope.ServiceProvider.GetRequiredService<MqttService>();
-var mqttUri = configuration.GetConnectionString("MqttClient") ?? throw new ArgumentNullException("ConnectionStrings:MqttClient", "Mqtt client connection string is not initialized");
-await mqttService.Setup(mqttUri);
+var mqttBroker = configuration.GetValue<string>("Mqtt:Broker") ?? throw new ArgumentNullException("Mqtt:Broker", "Mqtt broker is not initialized");
+var mqttUsername = configuration.GetValue<string>("Mqtt:Username") ?? throw new ArgumentNullException("Mqtt:Username", "Mqtt username is not initialized");
+var mqttPassword = configuration.GetValue<string>("Mqtt:Password") ?? throw new ArgumentNullException("Mqtt:Password", "Mqtt password is not initialized");
+await mqttService.Setup(mqttBroker, mqttUsername, mqttPassword);
 
 app.Run();

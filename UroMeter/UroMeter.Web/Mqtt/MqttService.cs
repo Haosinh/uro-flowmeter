@@ -10,7 +10,9 @@ namespace UroMeter.Web.Mqtt;
 /// </summary>
 public class MqttService
 {
-    private static string mqttUri = string.Empty;
+    private string broker = string.Empty;
+    private string username = string.Empty;
+    private string password = string.Empty;
 
     private readonly ILogger<MqttService> logger;
     private Dictionary<string, IMqttClient> clients = new();
@@ -23,17 +25,26 @@ public class MqttService
         this.logger = logger;
     }
 
-    public async Task Setup(string uri)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="broker"></param>
+    /// <param name="username"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    public async Task Setup(string broker, string username, string password)
     {
-        mqttUri = uri;
+        this.broker = broker;
+        this.username = username;
+        this.password = password;
 
         var factory = new MqttFactory();
         var client = factory.CreateMqttClient();
 
         var options = new MqttClientOptionsBuilder()
             .WithClientId("register")
-            .WithCredentials("", "")
-            .WithTcpServer("", 8883)
+            .WithCredentials(username, password)
+            .WithTcpServer(broker, 8883)
             .WithTlsOptions(o => o.UseTls())
             .Build();
 
