@@ -60,34 +60,25 @@ void callback(char *topic, byte *payload, unsigned int length);
 
 // put function declarations here:
 void setupWifi(const char *ssid, const char *password);
-void setupMQTT(const char *username, const char *password);
+void reconnectMQTT(const char *username, const char *password);
 
 void setup()
 {
   Serial.begin(115200);
-  pinMode(4, INPUT);
 
   setupWifi(WIFI_SSID, WIFI_PASSWORD);
 
   espClient.setCACert(root_ca);
   client.setServer(MQTT_BROKER, MQTT_PORT);
   client.setCallback(callback);
-  setupMQTT(MQTT_USERNAME, MQTT_PASSWORD);
 }
 
 void loop()
 {
-  // if (!client.connected())
-  // {
-  //   setupMQTT(MQTT_USERNAME, MQTT_PASSWORD);
-  // }
-
-  // publishMessage("esp32", "Hello from ESP32", false);
-
-  int state = digitalRead(4);
-  Serial.println(state);
-
-  // publishMessage("register", String(state), 0);
+  if (!client.connected())
+  {
+    reconnectMQTT(MQTT_USERNAME, MQTT_PASSWORD);
+  }
 
   client.loop();
   delay(10);
@@ -97,29 +88,19 @@ void publishMessage(const char *topic, String payload, boolean retained)
 {
   if (client.publish(topic, payload.c_str(), true))
   {
-    Serial.println("Message published [" + String(topic) + "]: " + payload);
+    Serial.printf("*Message published with Topic \"%s\", Payload \"%s\"\n", topic, payload);
   }
 }
 
 void callback(char *topic, byte *payload, unsigned int length)
 {
+  String message = "";
+  for (int i = 0; i < length; i++)
+  {
+    message += (char)payload[i];
+  }
 
-  // String message = "";
-
-  Serial.printf("[*] Got new message from broker with Topic %s, length %s\n", topic, length);
-  // Serial.printf("[*] Message: ");
-
-  // for (int i = 0; i < length; i++)
-  // {
-  //   message += (char)payload[i];
-  // }
-
-  // Serial.println(message);
-
-  // if (strcmp(topic, "led_state") == 0)
-  // {
-  //   Serial.println("inside here");
-  // }
+  Serial.printf("*Message received with Topic \"%s\", Length %i, Message \"%s\"\n", topic, length, message);
 }
 
 void setupWifi(const char *ssid, const char *password)
@@ -134,29 +115,29 @@ void setupWifi(const char *ssid, const char *password)
     Serial.println("Failed to connect");
   }
 
-  Serial.printf("WiFi connected with IP %s\n", WiFi.localIP().toString());
+  Serial.printf("*WiFi connected with IP %s\n", WiFi.localIP().toString());
 }
 
-void setupMQTT(const char *username, const char *password)
+void reconnectMQTT(const char *username, const char *password)
 {
   while (!client.connected())
   {
-    Serial.print("Attempting MQTT connection with ClientId ");
+    Serial.print("*MQTT connection with ClientId ");
 
     String clientId = "ESP32-";
     clientId += String(random(0xffff), HEX);
 
-    Serial.println(clientId);
+    Serial.print(clientId);
 
     if (!client.connect(clientId.c_str(), username, password))
     {
-      Serial.printf("SetupMQTT: FAILED with State %i, Try again!\n", client.state());
+      Serial.printf(": FAILED with State %i, Try again!\n", client.state());
       delay(2000);
     }
   }
 
-  Serial.println("CONNECTED");
+  Serial.println(": CONNECTED");
 
   publishMessage(TOPIC_REGISTER, "Hello from ESP32", false);
-  client.subscribe("led_state");
+  client.subscribe("backend");
 }
