@@ -11,7 +11,7 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
 
-    public DbSet<MedicalRecord> MedicalRecords { get; set; }
+    public DbSet<Record> Records { get; set; }
 
-    public DbSet<MedicalRecordData> MedicalRecordDatas { get; set; }
+    public DbSet<RecordData> RecordDatas { get; set; }
 }

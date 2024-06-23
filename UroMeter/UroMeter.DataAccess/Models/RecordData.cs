@@ -1,6 +1,6 @@
 ﻿namespace UroMeter.DataAccess.Models;
 
-public class MedicalRecordData
+public class RecordData
 {
     public int Id { get; set; }
 
@@ -10,5 +10,5 @@ public class MedicalRecordData
 
     public int MedicalRecordId { get; set; }
 
-    public MedicalRecord MedicalRecord { get; set; }
+    public Record Record { get; set; }
 }

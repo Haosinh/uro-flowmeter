@@ -1,6 +1,6 @@
 ﻿namespace UroMeter.DataAccess.Models;
 
-public class MedicalRecord
+public class Record
 {
     public int Id { get; set; }
 

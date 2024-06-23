@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UroMeter.DataAccess;
+using UroMeter.Web.Mqtt;
 using UroMeter.Web.Startup;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,8 @@ services.AddAsyncInitializer<DatabaseInitializer>();
 // Add services to the container.
 services.AddControllersWithViews();
 services.AddSwaggerGen();
+
+services.AddSingleton<MqttService>();
 
 var app = builder.Build();
 
@@ -41,5 +44,13 @@ app.UseSwaggerUI();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=User}/{action=Index}/{id?}");
+
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+dbContext.Database.Migrate();
+
+var mqttService = scope.ServiceProvider.GetRequiredService<MqttService>();
+var mqttUri = configuration.GetConnectionString("MqttClient") ?? throw new ArgumentNullException("ConnectionStrings:MqttClient", "Mqtt client connection string is not initialized");
+await mqttService.Setup(mqttUri);
 
 app.Run();

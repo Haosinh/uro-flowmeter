@@ -22,7 +22,7 @@ namespace UroMeter.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("UroMeter.DataAccess.Models.MedicalRecord", b =>
+            modelBuilder.Entity("UroMeter.DataAccess.Models.Record", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -40,10 +40,10 @@ namespace UroMeter.DataAccess.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("MedicalRecords");
+                    b.ToTable("Records");
                 });
 
-            modelBuilder.Entity("UroMeter.DataAccess.Models.MedicalRecordData", b =>
+            modelBuilder.Entity("UroMeter.DataAccess.Models.RecordData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,6 +54,9 @@ namespace UroMeter.DataAccess.Migrations
                     b.Property<int>("MedicalRecordId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("RecordId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("TimeInMilisecond")
                         .HasColumnType("integer");
 
@@ -62,9 +65,9 @@ namespace UroMeter.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MedicalRecordId");
+                    b.HasIndex("RecordId");
 
-                    b.ToTable("MedicalRecordDatas");
+                    b.ToTable("RecordDatas");
                 });
 
             modelBuilder.Entity("UroMeter.DataAccess.Models.User", b =>
@@ -91,7 +94,7 @@ namespace UroMeter.DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("UroMeter.DataAccess.Models.MedicalRecord", b =>
+            modelBuilder.Entity("UroMeter.DataAccess.Models.Record", b =>
                 {
                     b.HasOne("UroMeter.DataAccess.Models.User", "Patient")
                         .WithMany()
@@ -102,15 +105,15 @@ namespace UroMeter.DataAccess.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("UroMeter.DataAccess.Models.MedicalRecordData", b =>
+            modelBuilder.Entity("UroMeter.DataAccess.Models.RecordData", b =>
                 {
-                    b.HasOne("UroMeter.DataAccess.Models.MedicalRecord", "MedicalRecord")
+                    b.HasOne("UroMeter.DataAccess.Models.Record", "Record")
                         .WithMany()
-                        .HasForeignKey("MedicalRecordId")
+                        .HasForeignKey("RecordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("MedicalRecord");
+                    b.Navigation("Record");
                 });
 #pragma warning restore 612, 618
         }

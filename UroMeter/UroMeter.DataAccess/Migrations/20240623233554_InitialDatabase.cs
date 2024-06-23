@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace UroMeter.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class InitalMigrations : Migration
+    public partial class InitialDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,7 +28,7 @@ namespace UroMeter.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MedicalRecords",
+                name: "Records",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -38,9 +38,9 @@ namespace UroMeter.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MedicalRecords", x => x.Id);
+                    table.PrimaryKey("PK_Records", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MedicalRecords_Users_PatientId",
+                        name: "FK_Records_Users_PatientId",
                         column: x => x.PatientId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -48,34 +48,35 @@ namespace UroMeter.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MedicalRecordDatas",
+                name: "RecordDatas",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Height = table.Column<double>(type: "double precision", nullable: false),
-                    MedicalRecordId = table.Column<int>(type: "integer", nullable: false)
+                    TimeInMilisecond = table.Column<int>(type: "integer", nullable: false),
+                    VolumnInMililiter = table.Column<int>(type: "integer", nullable: false),
+                    MedicalRecordId = table.Column<int>(type: "integer", nullable: false),
+                    RecordId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MedicalRecordDatas", x => x.Id);
+                    table.PrimaryKey("PK_RecordDatas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MedicalRecordDatas_MedicalRecords_MedicalRecordId",
-                        column: x => x.MedicalRecordId,
-                        principalTable: "MedicalRecords",
+                        name: "FK_RecordDatas_Records_RecordId",
+                        column: x => x.RecordId,
+                        principalTable: "Records",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_MedicalRecordDatas_MedicalRecordId",
-                table: "MedicalRecordDatas",
-                column: "MedicalRecordId");
+                name: "IX_RecordDatas_RecordId",
+                table: "RecordDatas",
+                column: "RecordId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MedicalRecords_PatientId",
-                table: "MedicalRecords",
+                name: "IX_Records_PatientId",
+                table: "Records",
                 column: "PatientId");
         }
 
@@ -83,10 +84,10 @@ namespace UroMeter.DataAccess.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "MedicalRecordDatas");
+                name: "RecordDatas");
 
             migrationBuilder.DropTable(
-                name: "MedicalRecords");
+                name: "Records");
 
             migrationBuilder.DropTable(
                 name: "Users");

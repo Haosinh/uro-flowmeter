@@ -10,11 +10,11 @@ using UroMeter.Web.Models.MedicalRecord;
 namespace UroMeter.Web.Controllers;
 
 [Route("[controller]")]
-public class MedicalRecordController : Controller
+public class RecordController : Controller
 {
     private readonly AppDbContext appDbContext;
 
-    public MedicalRecordController(AppDbContext appDbContext)
+    public RecordController(AppDbContext appDbContext)
     {
         this.appDbContext = appDbContext;
     }
@@ -28,12 +28,12 @@ public class MedicalRecordController : Controller
             throw new Exception();
         }
 
-        var medicalRecords = await appDbContext.MedicalRecords
+        var medicalRecords = await appDbContext.Records
             .Where(e => e.PatientId == userId)
             .OrderBy(e => e.CheckUpAt)
             .ToListAsync(cancellationToken);
 
-        var dataPoints = await appDbContext.MedicalRecordDatas
+        var dataPoints = await appDbContext.RecordDatas
             .Where(e => e.MedicalRecordId == 1)
             .Select(e => new MedicalRecordDataDto
             {
@@ -83,10 +83,10 @@ public class MedicalRecordController : Controller
             await csv.ReadAsync();
             csv.ReadHeader();
 
-            var records = new List<MedicalRecordData>();
+            var records = new List<RecordData>();
             while (await csv.ReadAsync())
             {
-                var record = csv.GetRecord<MedicalRecordData>();
+                var record = csv.GetRecord<RecordData>();
                 record.MedicalRecordId = 1;
 
                 records.Add(record);
@@ -100,7 +100,7 @@ public class MedicalRecordController : Controller
     }
 }
 
-public class MedicalRecordMap : ClassMap<MedicalRecordData>
+public class MedicalRecordMap : ClassMap<RecordData>
 {
     public MedicalRecordMap()
     {
