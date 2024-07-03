@@ -1,24 +1,34 @@
-﻿using System.Globalization;
-using CsvHelper;
-using CsvHelper.Configuration;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UroMeter.DataAccess;
-using UroMeter.DataAccess.Models;
 using UroMeter.Web.Models.MedicalRecord;
 
 namespace UroMeter.Web.Controllers;
 
+/// <summary>
+/// 
+/// </summary>
 [Route("[controller]")]
 public class RecordController : Controller
 {
     private readonly AppDbContext appDbContext;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="appDbContext"></param>
     public RecordController(AppDbContext appDbContext)
     {
         this.appDbContext = appDbContext;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     [HttpGet("")]
     public async Task<ActionResult<MedicalRecordUserId>> Index(int userId, CancellationToken cancellationToken)
     {
@@ -33,7 +43,7 @@ public class RecordController : Controller
             .OrderBy(e => e.CheckUpAt)
             .ToListAsync(cancellationToken);
 
-        var dataPoints = await appDbContext.RecordDatas
+        await appDbContext.RecordDatas
             .Where(e => e.MedicalRecordId == 1)
             .Select(e => new MedicalRecordDataDto
             {
@@ -44,67 +54,14 @@ public class RecordController : Controller
 
         var simplify = new List<MedicalRecordDataDto>();
 
-        var current = 0;
-        var step = 2000;
-
-        var time = dataPoints.First().TimeInMilisecond;
-        foreach (var point in dataPoints)
-        {
-            point.TimeInMilisecond -= time;
-        }
-
-        foreach (var point in dataPoints)
-        {
-            if (point.TimeInMilisecond >= current)
-            {
-                simplify.Add(point);
-                current += step;
-            }
-        }
-
         var viewModel = new MedicalRecordUserId
         {
             Patient = patient,
-            MedicalRecords = medicalRecords,
+            Records = medicalRecords,
             DataPoints = simplify
 
         };
 
         return View(viewModel);
-    }
-
-    [HttpPost("{id:int}")]
-    public async Task<IActionResult> ImportMedicalRecord([FromRoute] int id, [FromForm] ImportMedicalRecordCommand command, CancellationToken cancellationToken)
-    {
-        using (var reader = new StreamReader(command.File.OpenReadStream()))
-        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-        {
-            csv.Context.RegisterClassMap<MedicalRecordMap>();
-            await csv.ReadAsync();
-            csv.ReadHeader();
-
-            var records = new List<RecordData>();
-            while (await csv.ReadAsync())
-            {
-                var record = csv.GetRecord<RecordData>();
-                record.MedicalRecordId = 1;
-
-                records.Add(record);
-            }
-
-            await appDbContext.AddRangeAsync(records, cancellationToken);
-            await appDbContext.SaveChangesAsync(cancellationToken);
-        }
-
-        return Empty;
-    }
-}
-
-public class MedicalRecordMap : ClassMap<RecordData>
-{
-    public MedicalRecordMap()
-    {
-        Map(e => e.TimeInMilisecond).Index(0);
-        Map(e => e.VolumnInMililiter).Index(1);
     }
 }

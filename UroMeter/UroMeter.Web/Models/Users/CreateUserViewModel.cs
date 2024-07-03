@@ -9,6 +9,7 @@ public class CreateUserViewModel
     public string Name { get; set; }
 
     [Required(ErrorMessage = "The Birthday field is required.")]
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
     public DateOnly BirthDay { get; set; }
 
     [Required]

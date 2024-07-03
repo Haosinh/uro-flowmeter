@@ -1,7 +1,6 @@
 ﻿@using System.Text.Json
 @model UroMeter.Web.Models.MedicalRecord.MedicalRecordUserId
 
-
 @{
     Layout = "_Layout";
 }
@@ -10,22 +9,56 @@
     <p class="mb-3">
         @Html.ActionLink("Back", "Index", "User", null, new { @class = "btn btn-primary" })
     </p>
-    <h1>Medical Record of User @Model.Patient.Name</h1>
+    <hr class="border border-primary border-2 opacity-50" />
+    <p class="h2">Medical Record of User @Model.Patient.Name</p>
+    <div class="row">
+        <div class="col">
+            @Html.LabelFor(model => model.Patient.Id, new { @class = "form-label" })
+            <label for="@Model.Patient.Id" class="form-label">Id: </label>
+            <p class="form-control">@Model.Patient.Id</p>
+        </div>
+        <div class="col">
+            <label for="@Model.Patient.Name" class="form-label">Name: </label>
+            <p class="form-control">@Model.Patient.Name</p>
+        </div>
+        <div class="col">
+            <label for="@Model.Patient.BirthDay" class="form-label">BirthDay: </label>
+            <p class="form-control">@Model.Patient.BirthDay</p>
+        </div>
+        <div class="col">
+            <label for="@Model.Patient.Phone" class="form-label">Phone: </label>
+            <p class="form-control">@Model.Patient.Phone</p>
+        </div>
+    </div>
+    <hr class="border border-primary border-2 opacity-50" />
     <div class="container">
         <div class="row" style="height: 500px">
-            <div class="col-3">
-                <label for="@Model.Patient.Id" class="form-label">Id: </label>
-                <p class="form-control">@Model.Patient.Id</p>
-                <label for="@Model.Patient.Name" class="form-label">Name: </label>
-                <p class="form-control">@Model.Patient.Name</p>
-                <label for="@Model.Patient.BirthDay" class="form-label">BirthDay: </label>
-                <p class="form-control">@Model.Patient.BirthDay</p>
-                <label for="@Model.Patient.Phone" class="form-label">Phone: </label>
-                <p class="form-control">@Model.Patient.Phone</p>
+            <div class="col">
+                <p class="h3">Medical records</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Index</th>
+                            <th scope="col">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 1; i <= Model.Records.Count; ++i)
+                        {
+                            var record = Model.Records[i];
+
+                            <tr>
+                                <th scope="row">@i</th>
+                                <td>@record.CheckUpAt</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
             <div class="col-9"> <canvas id="line-chart"></canvas></div>
         </div>
     </div>
+    <hr class="border border-primary border-2 opacity-50" />
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.min.js"></script>
@@ -33,7 +66,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1"></script>
 <script>
     const dataPoints = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.DataPoints))');
-    // const dataPoints = [{ x: 1, y: 10 }, { x: 2, y: 20 }, { x: 4, y: 30 }, { x: 8, y: 40 }];
 
     console.log(dataPoints);
 
