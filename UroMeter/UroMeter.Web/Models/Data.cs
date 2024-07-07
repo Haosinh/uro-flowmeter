@@ -21,7 +21,7 @@ public class Data
 		return point;
 	}
 
-	//public static List<Point> GetUpdateData(DateTime dateTime)
+	//public static List<Point> GetUpdateData(RecordAt dateTime)
 	//{
 	//    var point = new List<Point>();
 	//    var r = new Random();

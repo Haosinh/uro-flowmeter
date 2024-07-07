@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using UroMeter.DataAccess;
 using UroMeter.Web.Models.MedicalRecord;
+using UroMeter.Web.Models.Records;
 
 namespace UroMeter.Web.Controllers;
 
@@ -25,40 +26,42 @@ public class RecordController : Controller
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="userId"></param>
+    /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    /// <exception cref="Exception"></exception>
     [HttpGet("")]
-    public async Task<ActionResult<MedicalRecordUserId>> Index(int userId, CancellationToken cancellationToken)
+    public async Task<ActionResult<MedicalRecordUserId>> Index([FromQuery] ViewRecordRequest request, CancellationToken cancellationToken)
     {
-        var patient = await appDbContext.Users.FirstOrDefaultAsync(e => e.Id == userId, cancellationToken: cancellationToken);
+        var patient = await appDbContext.Users.FirstOrDefaultAsync(e => e.Id == request.UserId, cancellationToken);
         if (patient == null)
         {
             throw new Exception();
         }
 
         var medicalRecords = await appDbContext.Records
-            .Where(e => e.PatientId == userId)
+            .Where(e => e.PatientId == request.UserId)
             .OrderBy(e => e.CheckUpAt)
             .ToListAsync(cancellationToken);
 
-        await appDbContext.RecordDatas
-            .Where(e => e.MedicalRecordId == 1)
-            .Select(e => new MedicalRecordDataDto
-            {
-                TimeInMilisecond = e.TimeInMilisecond,
-                VolumnInMililiter = e.VolumnInMililiter
-            })
-            .ToListAsync(cancellationToken);
-
-        var simplify = new List<MedicalRecordDataDto>();
+        var recordDataDtos = new List<RecordDataDto>();
+        if (request.RecordId != 0)
+        {
+            recordDataDtos = await appDbContext.RecordDatas
+                 .Where(e => e.RecordId == request.RecordId)
+                 .OrderBy(e => e.RecordAt)
+                 .Select(e => new RecordDataDto
+                 {
+                     RecordAt = e.RecordAt,
+                     Volume = e.Volume
+                 })
+                 .ToListAsync(cancellationToken);
+        }
 
         var viewModel = new MedicalRecordUserId
         {
             Patient = patient,
             Records = medicalRecords,
-            DataPoints = simplify
+            DataPoints = recordDataDtos
 
         };
 

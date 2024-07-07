@@ -28,12 +28,31 @@ namespace UroMeter.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Devices",
+                columns: table => new
+                {
+                    MacAddress = table.Column<string>(type: "text", nullable: false),
+                    LastSeen = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PatientId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Devices", x => x.MacAddress);
+                    table.ForeignKey(
+                        name: "FK_Devices_Users_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Records",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CheckUpAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Finished = table.Column<bool>(type: "boolean", nullable: false),
                     PatientId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -53,9 +72,8 @@ namespace UroMeter.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TimeInMilisecond = table.Column<int>(type: "integer", nullable: false),
-                    VolumnInMililiter = table.Column<int>(type: "integer", nullable: false),
-                    MedicalRecordId = table.Column<int>(type: "integer", nullable: false),
+                    RecordAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Volume = table.Column<double>(type: "double precision", nullable: false),
                     RecordId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -68,6 +86,11 @@ namespace UroMeter.DataAccess.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Devices_PatientId",
+                table: "Devices",
+                column: "PatientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecordDatas_RecordId",
@@ -83,6 +106,9 @@ namespace UroMeter.DataAccess.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Devices");
+
             migrationBuilder.DropTable(
                 name: "RecordDatas");
 

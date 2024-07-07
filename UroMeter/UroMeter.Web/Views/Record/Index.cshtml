@@ -31,72 +31,107 @@
         </div>
     </div>
     <hr class="border border-primary border-2 opacity-50" />
-    <div class="container">
-        <div class="row" style="height: 500px">
-            <div class="col">
-                <p class="h3">Medical records</p>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Index</th>
-                            <th scope="col">Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (var i = 1; i <= Model.Records.Count; ++i)
-                        {
-                            var record = Model.Records[i];
+    <div class="row">
+        <div class="col">
+            <p class="h3">Medical records</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Index</th>
+                        <th scope="col">Record ID</th>
+                        <th scope="col">Time</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Records.Count; ++i)
+                    {
+                        var record = Model.Records[i];
 
-                            <tr>
-                                <th scope="row">@i</th>
-                                <td>@record.CheckUpAt</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-9">
+                        <tr>
+                            <th scope="row">@(i + 1)</th>
+                            <td>@record.Id</td>
+                            <td>@record.CheckUpAt</td>
+                            <td><a asp-controller="Record" asp-action="Index" asp-route-userId="@Model.Patient.Id" asp-route-recordId="@record.Id">View</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @if (Model.DataPoints.Count != 0)
+    {
+        <hr class="border border-primary border-2 opacity-50" />
+        <div class="container">
+            <div class="row justify-content-center">
                 <canvas id="line-chart"></canvas>
             </div>
         </div>
-    </div>
+    }
     <hr class="border border-primary border-2 opacity-50" />
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+
 <script>
     const dataPoints = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.DataPoints))');
 
     console.log(dataPoints);
 
-    new Chart(document.getElementById("line-chart"), {
+    var ctx = document.getElementById('line-chart').getContext('2d');
+    var myChart = new Chart(ctx, {
         type: 'line',
         data: {
             datasets: [
                 {
-                    label: "Flow",
+                    label: "Volumes",
                     data: dataPoints
                 }
             ]
         },
         options: {
+            responsive: false,
             title: {
                 display: true,
                 text: 'Flow Chart'
             },
-            options: {
-                responsive: true
-            },
             scales: {
                 x: {
+                    title: {
+                        display: true,
+                        text: "Time"
+                    },
                     type: 'time',
                     time: {
-                        unit: 'millisecond'
+                        unit: 'millisecond',
+                    },
+                    ticks: {
+                        source: 'data',
+                        autoSkip: true
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: "Volume (In Milliliter)"
                     }
                 }
             },
+            plugins: {
+                zoom: {
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                            modifierKey: 'alt'
+                        },
+                    }
+                }
+            }
         }
     });
+    Chart.register(zoomPlugin);
 </script>

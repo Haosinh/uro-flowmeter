@@ -12,7 +12,7 @@ using UroMeter.DataAccess;
 namespace UroMeter.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240623233554_InitialDatabase")]
+    [Migration("20240707081854_InitialDatabase")]
     partial class InitialDatabase
     {
         /// <inheritdoc />
@@ -25,6 +25,24 @@ namespace UroMeter.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("UroMeter.DataAccess.Models.Device", b =>
+                {
+                    b.Property<string>("MacAddress")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LastSeen")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("MacAddress");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Devices");
+                });
+
             modelBuilder.Entity("UroMeter.DataAccess.Models.Record", b =>
                 {
                     b.Property<int>("Id")
@@ -35,6 +53,9 @@ namespace UroMeter.DataAccess.Migrations
 
                     b.Property<DateTime>("CheckUpAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Finished")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("PatientId")
                         .HasColumnType("integer");
@@ -54,17 +75,14 @@ namespace UroMeter.DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MedicalRecordId")
-                        .HasColumnType("integer");
+                    b.Property<DateTimeOffset>("RecordAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("RecordId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("TimeInMilisecond")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("VolumnInMililiter")
-                        .HasColumnType("integer");
+                    b.Property<double>("Volume")
+                        .HasColumnType("double precision");
 
                     b.HasKey("Id");
 
@@ -95,6 +113,15 @@ namespace UroMeter.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("UroMeter.DataAccess.Models.Device", b =>
+                {
+                    b.HasOne("UroMeter.DataAccess.Models.User", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId");
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("UroMeter.DataAccess.Models.Record", b =>

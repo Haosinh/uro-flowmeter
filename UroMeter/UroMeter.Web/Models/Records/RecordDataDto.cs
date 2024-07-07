@@ -2,11 +2,11 @@
 
 namespace UroMeter.Web.Models.MedicalRecord;
 
-public class MedicalRecordDataDto
+public class RecordDataDto
 {
     [JsonPropertyName("x")]
-    public int TimeInMilisecond { get; set; }
+    public DateTimeOffset RecordAt { get; set; }
 
     [JsonPropertyName("y")]
-    public int VolumnInMililiter { get; set; }
+    public double Volume { get; set; }
 }

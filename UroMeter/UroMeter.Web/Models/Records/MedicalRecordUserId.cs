@@ -8,5 +8,5 @@ public class MedicalRecordUserId
 
     public List<Record> Records { get; set; } = new();
 
-    public IEnumerable<MedicalRecordDataDto> DataPoints { get; set; } = new List<MedicalRecordDataDto>();
+    public IList<RecordDataDto> DataPoints { get; set; } = new List<RecordDataDto>();
 }
