@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using MQTTnet;
 using MQTTnet.Client;
@@ -112,7 +113,10 @@ public partial class MqttClientService : IMqttClientService
                     await dbContext.SaveChangesAsync();
 
                     using var reader = new StringReader(content);
-                    using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+                    using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        PrepareHeaderForMatch = args => args.Header.ToLower(),
+                    });
 
                     var dataRecordDtos = csv.GetRecords<DataRecordDto>().ToList();
                     var records = dataRecordDtos.Select(e => new RecordData
