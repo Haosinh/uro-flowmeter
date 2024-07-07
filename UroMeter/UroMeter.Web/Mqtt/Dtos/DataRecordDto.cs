@@ -2,24 +2,7 @@
 
 public class DataRecordDto
 {
-    public DataCommand Command { get; set; }
+    public long Time { get; set; }
 
-    public DateTimeOffset? RecordAt { get; set; }
-
-    public double? Volume { get; set; }
-
-    public bool IsValid()
-    {
-        if (Command == DataCommand.INVALID)
-        {
-            return false;
-        }
-
-        if (Command == DataCommand.RECORD)
-        {
-            return RecordAt is not null && Volume != null;
-        }
-
-        return true;
-    }
+    public double Volume { get; set; }
 }

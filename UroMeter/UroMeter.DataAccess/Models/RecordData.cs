@@ -6,7 +6,7 @@ public class RecordData
 
     public long Time { get; set; }
 
-    public long Volume { get; set; }
+    public double Volume { get; set; }
 
     public int RecordId { get; set; }
 
