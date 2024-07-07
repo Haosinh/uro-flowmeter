@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
+using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using MQTTnet;
 using MQTTnet.Client;
@@ -88,20 +90,6 @@ public partial class MqttClientService : IMqttClientService
 
                     var macAddress = topicTokens[1];
 
-                    var dataTokens = content.Split("|");
-                    if (dataTokens.Length < 1)
-                    {
-                        logger.LogWarning("{handler}: Receive invalid data with Topic:{topic}, Content:{content}", nameof(MqttClientService), topic, content);
-                        return;
-                    }
-
-                    var dataRecordDto = dataTokens.MapToDataRecordDto();
-                    if (!dataRecordDto.IsValid())
-                    {
-                        logger.LogWarning("{handler}: Receive invalid data with Topic:{topic}, Content:{content}", nameof(MqttClientService), topic, content);
-                        return;
-                    }
-
                     await using var scope = serviceProvider.CreateAsyncScope();
                     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
@@ -118,82 +106,23 @@ public partial class MqttClientService : IMqttClientService
                         return;
                     }
 
-                    switch (dataRecordDto.Command)
+                    var newRecord = new Record { PatientId = device.PatientId.Value };
+                    await dbContext.AddAsync(newRecord);
+
+                    await dbContext.SaveChangesAsync();
+
+                    using var reader = new StringReader(content);
+                    using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+
+                    var records = csv.GetRecords<RecordData>().ToList();
+                    foreach (var record in records)
                     {
-                        case DataCommand.BEGIN_RECORD:
-                            {
-                                var latestRecord = await dbContext.Records
-                                    .OrderByDescending(e => e.CheckUpAt)
-                                    .FirstOrDefaultAsync(e => e.PatientId == device.PatientId);
-
-                                if (latestRecord is not null && !latestRecord.Finished)
-                                {
-                                    logger.LogWarning("{handler}: The latest record is not finished, cannot create new record with RecordId:{recordId}, CheckUpAt:{checkUpAt}, PatientId:{patientId}, Device:{macAddress}, LastSeen{lastSeen}, Topic:{topic}, Content:{content}", nameof(MqttClientService), latestRecord.Id, latestRecord.CheckUpAt, device.PatientId, device.MacAddress, device.LastSeen, topic, content);
-                                    return;
-                                }
-
-                                var newRecord = new Record { PatientId = device.PatientId.Value };
-                                await dbContext.AddAsync(newRecord);
-
-                                await dbContext.SaveChangesAsync();
-                            }
-
-                            break;
-                        case DataCommand.END_RECORD:
-                            {
-                                var latestRecord = await dbContext.Records
-                                    .OrderByDescending(e => e.CheckUpAt)
-                                    .FirstOrDefaultAsync(e => e.PatientId == device.PatientId);
-
-                                if (latestRecord is null)
-                                {
-                                    logger.LogWarning("{handler}: The latest record is not found, cannot closed record with PatientId:{patientId}, Device:{device}, LastSeen{lastSeen}, Topic:{topic}, Content:{content}", nameof(MqttClientService), device.PatientId, device.MacAddress, device.LastSeen, topic, content);
-                                    return;
-                                }
-
-                                if (latestRecord.Finished)
-                                {
-                                    logger.LogWarning("{handler}: The latest record is finished, cannot closed record with with PatientId:{patientId}, RecordId:{recordId}, CheckUpAt:{checkUpAt}, Device:{device}, LastSeen{lastSeen}, Topic:{topic}, Content:{content}", nameof(MqttClientService), device.PatientId, latestRecord.Id, latestRecord.CheckUpAt, device.MacAddress, device.LastSeen, topic, content);
-                                    return;
-                                }
-
-                                latestRecord.Finished = true;
-
-                                await dbContext.SaveChangesAsync();
-                            }
-
-                            break;
-                        case DataCommand.RECORD:
-                            {
-                                var latestRecord = await dbContext.Records
-                                    .OrderByDescending(e => e.CheckUpAt)
-                                    .FirstOrDefaultAsync(e => e.PatientId == device.PatientId);
-
-                                if (latestRecord is null)
-                                {
-                                    logger.LogWarning("{handler}: The latest record is not found, cannot insert data to record with PatientId:{patientId}, Device:{device}, LastSeen{lastSeen}, Topic:{topic}, Content:{content}", nameof(MqttClientService), device.PatientId, device.MacAddress, device.LastSeen, topic, content);
-                                    return;
-                                }
-
-                                if (latestRecord.Finished)
-                                {
-                                    logger.LogWarning("{handler}: The latest record is finished, cannot insert data to record with with PatientId:{patientId}, RecordId:{recordId}, CheckUpAt:{checkUpAt}, Device:{device}, LastSeen{lastSeen}, Topic:{topic}, Content:{content}", nameof(MqttClientService), device.PatientId, latestRecord.Id, latestRecord.CheckUpAt, device.MacAddress, device.LastSeen, topic, content);
-                                    return;
-                                }
-
-                                var recordData = new RecordData
-                                {
-                                    RecordAt = dataRecordDto.RecordAt!.Value,
-                                    Volume = dataRecordDto.Volume!.Value,
-                                    RecordId = latestRecord.Id
-                                };
-                                await dbContext.RecordDatas.AddAsync(recordData);
-
-                                await dbContext.SaveChangesAsync();
-                            }
-
-                            break;
+                        record.RecordId = newRecord.Id;
                     }
+
+                    await dbContext.RecordDatas.AddRangeAsync(records);
+
+                    await dbContext.SaveChangesAsync();
                 }
 
                 break;

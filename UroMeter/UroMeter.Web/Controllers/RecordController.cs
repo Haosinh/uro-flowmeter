@@ -48,10 +48,10 @@ public class RecordController : Controller
         {
             recordDataDtos = await appDbContext.RecordDatas
                  .Where(e => e.RecordId == request.RecordId)
-                 .OrderBy(e => e.RecordAt)
+                 .OrderBy(e => e.Time)
                  .Select(e => new RecordDataDto
                  {
-                     RecordAt = e.RecordAt,
+                     Time = e.Time,
                      Volume = e.Volume
                  })
                  .ToListAsync(cancellationToken);

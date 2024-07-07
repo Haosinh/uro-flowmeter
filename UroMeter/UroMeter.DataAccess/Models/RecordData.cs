@@ -4,9 +4,9 @@ public class RecordData
 {
     public int Id { get; set; }
 
-    public DateTimeOffset RecordAt { get; set; }
+    public long Time { get; set; }
 
-    public double Volume { get; set; }
+    public long Volume { get; set; }
 
     public int RecordId { get; set; }
 

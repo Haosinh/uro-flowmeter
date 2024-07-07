@@ -1,4 +1,5 @@
 ﻿using UroMeter.DataAccess.Models;
+using UroMeter.Web.Models.Records;
 
 namespace UroMeter.Web.Models.MedicalRecord;
 
