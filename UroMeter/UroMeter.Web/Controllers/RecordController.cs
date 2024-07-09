@@ -40,7 +40,7 @@ public class RecordController : Controller
 
         var medicalRecords = await appDbContext.Records
             .Where(e => e.PatientId == request.UserId)
-            .OrderByDescending(e => e.CheckUpAt)
+            .OrderBy(e => e.CheckUpAt)
             .ToListAsync(cancellationToken);
 
         var recordDataDtos = new List<RecordDataDto>();

@@ -37,7 +37,7 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col"></th>
+                        <th scope="col">Index</th>
                         <th scope="col">Record ID</th>
                         <th scope="col">Time</th>
                         <th scope="col"></th>
@@ -51,7 +51,7 @@
                         <tr>
                             <th scope="row">@(i + 1)</th>
                             <td>@record.Id</td>
-                            <td>@record.CheckUpAt.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td>@record.CheckUpAt</td>
                             <td><a asp-controller="Record" asp-action="Index" asp-route-userId="@Model.Patient.Id" asp-route-recordId="@record.Id">View</a></td>
                         </tr>
                     }
@@ -105,7 +105,10 @@
                         display: true,
                         text: "Time"
                     },
-                    type: 'linear',
+                    type: 'time',
+                    time: {
+                        unit: 'millisecond',
+                    },
                     ticks: {
                         source: 'data',
                         autoSkip: true

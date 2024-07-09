@@ -27,7 +27,7 @@ namespace UroMeter.DataAccess.Migrations
                     b.Property<string>("MacAddress")
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("LastSeen")
+                    b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("PatientId")
@@ -49,7 +49,7 @@ namespace UroMeter.DataAccess.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CheckUpAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("Finished")
                         .HasColumnType("boolean");
@@ -72,11 +72,11 @@ namespace UroMeter.DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTimeOffset>("RecordAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("RecordId")
                         .HasColumnType("integer");
-
-                    b.Property<long>("Time")
-                        .HasColumnType("bigint");
 
                     b.Property<double>("Volume")
                         .HasColumnType("double precision");

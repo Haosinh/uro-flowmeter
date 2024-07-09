@@ -114,13 +114,12 @@ public partial class MqttClientService : IMqttClientService
                     using var reader = new StringReader(content);
                     using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
 
-                    var dataRecordDtos = csv.GetRecords<DataRecordDto>().ToList();
-                    var records = dataRecordDtos.Select(e => new RecordData
+                    var records = csv.GetRecords<RecordData>().ToList();
+                    foreach (var record in records)
                     {
-                        Time = e.Time,
-                        Volume = e.Volume,
-                        RecordId = newRecord.Id
-                    }).ToList();
+                        record.RecordId = newRecord.Id;
+                    }
+
                     await dbContext.RecordDatas.AddRangeAsync(records);
 
                     await dbContext.SaveChangesAsync();
