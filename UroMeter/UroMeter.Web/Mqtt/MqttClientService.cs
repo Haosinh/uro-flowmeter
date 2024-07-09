@@ -88,7 +88,7 @@ public partial class MqttClientService : IMqttClientService
 
                     var macAddress = topicTokens[1];
 
-                    var dataTokens = content.Split("|");
+                    var dataTokens = content.Split(",");
                     if (dataTokens.Length < 1)
                     {
                         logger.LogWarning("{handler}: Receive invalid data with Topic:{topic}, Content:{content}", nameof(MqttClientService), topic, content);
