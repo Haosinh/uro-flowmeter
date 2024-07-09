@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace UroMeter.Web.Models.Records;
+namespace UroMeter.Web.Models.MedicalRecord;
 
 public class RecordDataDto
 {
     [JsonPropertyName("x")]
-    public long Time { get; set; }
+    public DateTimeOffset RecordAt { get; set; }
 
     [JsonPropertyName("y")]
     public double Volume { get; set; }
