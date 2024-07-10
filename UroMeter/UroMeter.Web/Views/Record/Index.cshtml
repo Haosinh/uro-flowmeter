@@ -97,7 +97,7 @@
                               {
                                   NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals
                               }))');
-    const speedDtos = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.SpeedDataDtos, , new JsonSerializerOptions
+    const speedDtos = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.SpeedDataDtos, new JsonSerializerOptions
                               {
                                   NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals
                               }))');
