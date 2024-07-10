@@ -64,9 +64,9 @@ public class RecordController : Controller
 
             for (var i = step - 1; i < recordDataDtos.Count; i += step)
             {
-                var timeDiff = recordDataDtos[i].RecordAt - recordDataDtos[i - step - 1].RecordAt;
-                var speed = (recordDataDtos[i].Volume - recordDataDtos[i - step - 1].Volume) / timeDiff.Milliseconds;
-                var time = recordDataDtos[i - step - 1].RecordAt.AddMilliseconds((int)(timeDiff.Milliseconds / 2));
+                var timeDiff = recordDataDtos[i].RecordAt - recordDataDtos[i - (step - 1)].RecordAt;
+                var speed = (recordDataDtos[i].Volume - recordDataDtos[i - (step - 1)].Volume) / timeDiff.Milliseconds;
+                var time = recordDataDtos[i - (step - 1)].RecordAt.AddMilliseconds((int)(timeDiff.Milliseconds / 2));
 
                 speedDataDtos.Add(new SpeedDataDto
                 {
