@@ -12,6 +12,24 @@ public static class MapperExtension
     /// </summary>
     /// <param name="tokens"></param>
     /// <returns></returns>
+    public static DataCommand GetCommand(this string[] tokens)
+    {
+        var command = DataCommand.INVALID;
+
+        if (tokens.Length >= 1)
+        {
+            var success = Enum.TryParse(tokens[0], out command);
+            command = success ? command : DataCommand.INVALID;
+        }
+
+        return command;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="tokens"></param>
+    /// <returns></returns>
     public static DataRecordDto MapToDataRecordDto(this string[] tokens)
     {
         var dataRecordDto = new DataRecordDto();
@@ -24,10 +42,10 @@ public static class MapperExtension
 
         if (tokens.Length >= 2)
         {
-            var success = long.TryParse(tokens[1], out var seconds);
+            var success = long.TryParse(tokens[1], out var milliseconds);
             if (success)
             {
-                dataRecordDto.RecordAt = DateTimeOffset.FromUnixTimeMilliseconds(seconds);
+                dataRecordDto.Time = milliseconds;
             }
         }
 
@@ -41,6 +59,28 @@ public static class MapperExtension
         }
 
         return dataRecordDto;
+    }
+
+    public static BeginRecordDto MapToBeginDataRecordDto(this string[] tokens)
+    {
+        var beginRecordDto = new BeginRecordDto();
+
+        if (tokens.Length >= 1)
+        {
+            var success = Enum.TryParse(tokens[0], out DataCommand command);
+            beginRecordDto.Command = success ? command : DataCommand.INVALID;
+        }
+
+        if (tokens.Length >= 2)
+        {
+            var success = long.TryParse(tokens[1], out var seconds);
+            if (success)
+            {
+                beginRecordDto.RecordAt = DateTimeOffset.FromUnixTimeSeconds(seconds);
+            }
+        }
+
+        return beginRecordDto;
     }
 
     /// <summary>

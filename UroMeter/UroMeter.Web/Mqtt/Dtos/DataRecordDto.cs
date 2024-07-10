@@ -4,7 +4,7 @@ public class DataRecordDto
 {
     public DataCommand Command { get; set; }
 
-    public DateTimeOffset? RecordAt { get; set; }
+    public long Time { get; set; }
 
     public double? Volume { get; set; }
 
@@ -17,7 +17,7 @@ public class DataRecordDto
 
         if (Command == DataCommand.RECORD)
         {
-            return RecordAt is not null && Volume != null;
+            return Volume != null;
         }
 
         return true;

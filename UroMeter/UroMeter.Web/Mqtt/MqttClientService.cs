@@ -95,13 +95,6 @@ public partial class MqttClientService : IMqttClientService
                         return;
                     }
 
-                    var dataRecordDto = dataTokens.MapToDataRecordDto();
-                    if (!dataRecordDto.IsValid())
-                    {
-                        logger.LogWarning("{handler}: Receive invalid data with Topic:{topic}, Content:{content}", nameof(MqttClientService), topic, content);
-                        return;
-                    }
-
                     await using var scope = serviceProvider.CreateAsyncScope();
                     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
@@ -118,10 +111,12 @@ public partial class MqttClientService : IMqttClientService
                         return;
                     }
 
-                    switch (dataRecordDto.Command)
+                    switch (dataTokens.GetCommand())
                     {
                         case DataCommand.BEGIN_RECORD:
                             {
+                                var beginRecordDto = dataTokens.MapToBeginDataRecordDto();
+
                                 var latestRecord = await dbContext.Records
                                     .OrderByDescending(e => e.CheckUpAt)
                                     .FirstOrDefaultAsync(e => e.PatientId == device.PatientId);
@@ -132,7 +127,11 @@ public partial class MqttClientService : IMqttClientService
                                     return;
                                 }
 
-                                var newRecord = new Record { PatientId = device.PatientId.Value };
+                                var newRecord = new Record
+                                {
+                                    PatientId = device.PatientId.Value,
+                                    RecordAt = beginRecordDto.RecordAt.LocalDateTime
+                                };
                                 await dbContext.AddAsync(newRecord);
 
                                 await dbContext.SaveChangesAsync();
@@ -142,8 +141,8 @@ public partial class MqttClientService : IMqttClientService
                         case DataCommand.END_RECORD:
                             {
                                 var latestRecord = await dbContext.Records
-                                    .OrderByDescending(e => e.CheckUpAt)
-                                    .FirstOrDefaultAsync(e => e.PatientId == device.PatientId);
+                                     .OrderByDescending(e => e.CheckUpAt)
+                                     .FirstOrDefaultAsync(e => e.PatientId == device.PatientId);
 
                                 if (latestRecord is null)
                                 {
@@ -181,9 +180,16 @@ public partial class MqttClientService : IMqttClientService
                                     return;
                                 }
 
+                                var dataRecordDto = dataTokens.MapToDataRecordDto();
+                                if (!dataRecordDto.IsValid())
+                                {
+                                    logger.LogWarning("{handler}: Receive invalid data with Topic:{topic}, Content:{content}", nameof(MqttClientService), topic, content);
+                                    return;
+                                }
+
                                 var recordData = new RecordData
                                 {
-                                    RecordAt = dataRecordDto.RecordAt!.Value,
+                                    RecordAt = latestRecord.RecordAt.AddMilliseconds(dataRecordDto.Time),
                                     Volume = dataRecordDto.Volume!.Value,
                                     RecordId = latestRecord.Id
                                 };

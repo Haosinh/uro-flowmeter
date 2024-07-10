@@ -6,6 +6,8 @@ public class Record
 
     public DateTime CheckUpAt { get; set; } = DateTime.Now;
 
+    public DateTime RecordAt { get; set; }
+
     public bool Finished { get; set; } = false;
 
     public int PatientId { get; set; }
