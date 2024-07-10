@@ -4,9 +4,9 @@ public class Record
 {
     public int Id { get; set; }
 
-    public DateTime CheckUpAt { get; set; } = DateTime.Now;
+    public DateTimeOffset CheckUpAt { get; set; } = DateTime.Now;
 
-    public DateTime RecordAt { get; set; }
+    public DateTimeOffset RecordAt { get; set; }
 
     public bool Finished { get; set; } = false;
 

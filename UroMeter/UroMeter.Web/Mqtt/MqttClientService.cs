@@ -130,7 +130,7 @@ public partial class MqttClientService : IMqttClientService
                                 var newRecord = new Record
                                 {
                                     PatientId = device.PatientId.Value,
-                                    RecordAt = beginRecordDto.RecordAt.LocalDateTime
+                                    RecordAt = beginRecordDto.RecordAt
                                 };
                                 await dbContext.AddAsync(newRecord);
 
@@ -263,7 +263,8 @@ public partial class MqttClientService : IMqttClientService
                 finally
                 {
                     // Check the connection state every 5 seconds and perform a reconnect if required.
-                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken); }
+                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                }
             }
         }, cancellationToken);
     }

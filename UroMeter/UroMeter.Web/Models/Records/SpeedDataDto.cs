@@ -2,11 +2,11 @@
 
 namespace UroMeter.Web.Models.Records;
 
-public class RecordDataDto
+public class SpeedDataDto
 {
     [JsonPropertyName("x")]
     public DateTimeOffset RecordAt { get; set; }
 
     [JsonPropertyName("y")]
-    public double Volume { get; set; }
+    public double Speed { get; set; }
 }

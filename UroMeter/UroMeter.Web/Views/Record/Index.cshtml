@@ -1,5 +1,5 @@
 ﻿@using System.Text.Json
-@model UroMeter.Web.Models.MedicalRecord.MedicalRecordUserId
+@model UroMeter.Web.Models.Records.MedicalRecordUserId
 
 @{
     Layout = "_Layout";
@@ -81,6 +81,7 @@
 
 <script>
     const dataPoints = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.DataPoints))');
+    const speedDtos = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.SpeedDataDtos))');
 
     console.log(dataPoints);
 
@@ -90,8 +91,12 @@
         data: {
             datasets: [
                 {
-                    label: "Volumes",
+                    label: "Volume",
                     data: dataPoints
+                },
+                {
+                    label: "Speed",
+                    data: speedDtos
                 }
             ]
         },
@@ -116,7 +121,7 @@
                 y: {
                     title: {
                         display: true,
-                        text: "Volume (In Milliliter)"
+                        text: "Speed (In Milliliter)"
                     }
                 }
             },
