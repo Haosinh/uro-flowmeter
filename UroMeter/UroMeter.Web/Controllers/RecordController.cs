@@ -60,7 +60,7 @@ public class RecordController : Controller
         var speedDataDtos = new List<SpeedDataDto>();
         if (recordDataDtos.Count > 0)
         {
-            var step = 5;
+            var step = 2;
 
             for (var i = step - 1; i < recordDataDtos.Count; i += step)
             {
@@ -70,7 +70,7 @@ public class RecordController : Controller
 
                 speedDataDtos.Add(new SpeedDataDto
                 {
-                    Speed = speed,
+                    Speed = speed > 0 ? speed : 0,
                     RecordAt = time
                 });
             }

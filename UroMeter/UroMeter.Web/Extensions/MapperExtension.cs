@@ -45,7 +45,7 @@ public static class MapperExtension
             var success = long.TryParse(tokens[1], out var milliseconds);
             if (success)
             {
-                dataRecordDto.Time = milliseconds;
+                dataRecordDto.RecordAt = milliseconds;
             }
         }
 
