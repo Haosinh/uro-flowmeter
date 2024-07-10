@@ -263,8 +263,7 @@ public partial class MqttClientService : IMqttClientService
                 finally
                 {
                     // Check the connection state every 5 seconds and perform a reconnect if required.
-                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
-                }
+                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken); }
             }
         }, cancellationToken);
     }

@@ -39,7 +39,8 @@
                     <tr>
                         <th scope="col">Index</th>
                         <th scope="col">Record ID</th>
-                        <th scope="col">Time</th>
+                        <th scope="col">Send At</th>
+                        <th scope="col">Record At</th>
                         <th scope="col"></th>
                     </tr>
                 </thead>
@@ -52,6 +53,7 @@
                             <th scope="row">@(i + 1)</th>
                             <td>@record.Id</td>
                             <td>@record.CheckUpAt</td>
+                            <td>@record.RecordAt</td>
                             <td><a asp-controller="Record" asp-action="Index" asp-route-userId="@Model.Patient.Id" asp-route-recordId="@record.Id">View</a></td>
                         </tr>
                     }
@@ -106,9 +108,6 @@
                         text: "Time"
                     },
                     type: 'time',
-                    time: {
-                        unit: 'millisecond',
-                    },
                     ticks: {
                         source: 'data',
                         autoSkip: true
