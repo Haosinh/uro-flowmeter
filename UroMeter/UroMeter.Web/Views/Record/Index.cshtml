@@ -63,13 +63,26 @@
     </div>
     @if (Model.DataPoints.Count != 0)
     {
+        <p class="h2">Volume Chart</p>
+
         <hr class="border border-primary border-2 opacity-50" />
         <div class="container">
             <div class="row justify-content-center">
                 <canvas id="line-chart"></canvas>
             </div>
         </div>
+
+        <hr class="border border-primary border-2 opacity-50" />
+
+        <p class="h2">Speed Chart</p>
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <canvas id="line-chart-speed"></canvas>
+            </div>
+        </div>
     }
+
     <hr class="border border-primary border-2 opacity-50" />
 </div>
 
@@ -83,8 +96,6 @@
     const dataPoints = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.DataPoints))');
     const speedDtos = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.SpeedDataDtos))');
 
-    console.log(dataPoints);
-
     var ctx = document.getElementById('line-chart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'line',
@@ -93,7 +104,52 @@
                 {
                     label: "Volume",
                     data: dataPoints
+                }
+            ]
+        },
+        options: {
+            responsive: false,
+            title: {
+                display: true,
+                text: 'Flow Chart'
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: "Time"
+                    },
+                    type: 'time',
+                    ticks: {
+                        source: 'data',
+                        autoSkip: true
+                    }
                 },
+                y: {
+                    title: {
+                        display: true,
+                        text: "Speed (In Milliliter)"
+                    }
+                }
+            },
+            plugins: {
+                zoom: {
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                            modifierKey: 'alt'
+                        },
+                    }
+                }
+            }
+        }
+    });
+
+    var ctxSpeed = document.getElementById('line-chart-speed').getContext('2d');
+    var myChartSpeed = new Chart(ctxSpeed, {
+        type: 'line',
+        data: {
+            datasets: [
                 {
                     label: "Speed",
                     data: speedDtos
@@ -137,5 +193,6 @@
             }
         }
     });
+
     Chart.register(zoomPlugin);
 </script>
